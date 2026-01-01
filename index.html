@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007AFF">
+    <meta name="description" content="University Student Todo List App">
+    <title>UniTask | Student Todo List</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="apple-spinner"></div>
+            <h2>UniTask</h2>
+            <p>Loading your academic organizer...</p>
+        </div>
+    </div>
+
+    <!-- Authentication Screens -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1><i class="fas fa-graduation-cap"></i> UniTask</h1>
+                <p>Your Academic Companion</p>
+            </div>
+            
+            <div class="auth-form active" id="loginForm">
+                <h2>Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to continue</p>
+                
+                <form id="loginFormElement">
+                    <div class="input-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i> University Email
+                        </label>
+                        <input type="email" id="email" placeholder="student@university.edu" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="loginBtn">
+                        <span class="btn-text">Sign In</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="showRegister">Sign Up</a></p>
+                </div>
+            </div>
+            
+            <div class="auth-form" id="registerForm">
+                <h2>Create Account</h2>
+                <p class="auth-subtitle">Join your university network</p>
+                
+                <form id="registerFormElement">
+                    <div class="input-group">
+                        <label for="regName">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input type="text" id="regName" placeholder="John Smith" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="regEmail">
+                            <i class="fas fa-envelope"></i> University Email
+                        </label>
+                        <input type="email" id="regEmail" placeholder="student@university.edu" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="regStudentId">
+                            <i class="fas fa-id-card"></i> Student ID
+                        </label>
+                        <input type="text" id="regStudentId" placeholder="STU123456" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="regPassword">
+                            <i class="fas fa-lock"></i> Create Password
+                        </label>
+                        <input type="password" id="regPassword" placeholder="Minimum 8 characters" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="regConfirmPassword">
+                            <i class="fas fa-lock"></i> Confirm Password
+                        </label>
+                        <input type="password" id="regConfirmPassword" placeholder="Re-enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="registerBtn">
+                        <span class="btn-text">Create Account</span>
+                        <i class="fas fa-user-plus"></i>
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" id="showLogin">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="appContainer" class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="avatar" id="userAvatar">JS</div>
+                    <div class="user-info">
+                        <h3 id="userName">John Smith</h3>
+                        <p id="userEmail">john.smith@university.edu</p>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="active" data-page="dashboard">
+                    <a href="#">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li data-page="todo">
+                    <a href="#">
+                        <i class="fas fa-tasks"></i>
+                        <span>My Tasks</span>
+                        <span class="badge" id="taskCount">0</span>
+                    </a>
+                </li>
+                <li data-page="calendar">
+                    <a href="#">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendar</span>
+                    </a>
+                </li>
+                <li data-page="resources">
+                    <a href="#">
+                        <i class="fas fa-book"></i>
+                        <span>Resources</span>
+                    </a>
+                </li>
+                <li data-page="notifications">
+                    <a href="#">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                        <span class="badge" id="notificationCount">0</span>
+                    </a>
+                </li>
+                <li data-page="settings">
+                    <a href="#">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle" class="subtitle">Welcome back! Here's your overview</p>
+                </div>
+                
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search tasks, resources..." id="searchInput">
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        
+                        <button class="icon-btn notification-btn" id="notificationBell" aria-label="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-dot" id="notificationDot"></span>
+                        </button>
+                        
+                        <button class="btn-primary new-task-btn" id="newTaskBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>New Task</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Dashboard Page -->
+                <div class="page active" id="dashboardPage">
+                    <div class="dashboard-grid">
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon pending">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="pendingTasks">0</h3>
+                                    <p>Pending Tasks</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon completed">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="completedTasks">0</h3>
+                                    <p>Completed</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon overdue">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="overdueTasks">0</h3>
+                                    <p>Overdue</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon upcoming">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="upcomingTasks">0</h3>
+                                    <p>Due This Week</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>Quick Actions</h2>
+                            </div>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn" id="quickAddTask">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Add Task</span>
+                                </button>
+                                <button class="quick-action-btn" id="quickAddEvent">
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <span>Add Event</span>
+                                </button>
+                                <button class="quick-action-btn" id="quickViewSchedule">
+                                    <i class="fas fa-calendar-week"></i>
+                                    <span>View Schedule</span>
+                                </button>
+                                <button class="quick-action-btn" id="quickResources">
+                                    <i class="fas fa-book-open"></i>
+                                    <span>Study Resources</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Tasks -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>Upcoming Deadlines</h2>
+                                <a href="#" class="view-all" data-page="todo">View All</a>
+                            </div>
+                            <div class="tasks-list" id="upcomingTasksList">
+                                <!-- Upcoming tasks will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Resources -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>Recent Resources</h2>
+                                <a href="#" class="view-all" data-page="resources">View All</a>
+                            </div>
+                            <div class="resources-grid" id="recentResources">
+                                <!-- Recent resources will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Todo Page -->
+                <div class="page" id="todoPage">
+                    <div class="todo-header">
+                        <div class="todo-filters">
+                            <button class="filter-btn active" data-filter="all">All Tasks</button>
+                            <button class="filter-btn" data-filter="pending">Pending</button>
+                            <button class="filter-btn" data-filter="completed">Completed</button>
+                            <button class="filter-btn" data-filter="overdue">Overdue</button>
+                        </div>
+                        
+                        <div class="todo-sort">
+                            <select id="sortTasks">
+                                <option value="dueDate">Sort by Due Date</option>
+                                <option value="priority">Sort by Priority</option>
+                                <option value="title">Sort by Title</option>
+                                <option value="created">Sort by Created Date</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="tasks-container" id="tasksContainer">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    
+                    <div class="empty-state" id="emptyTasksState">
+                        <i class="fas fa-tasks"></i>
+                        <h3>No tasks yet</h3>
+                        <p>Add your first task to get started</p>
+                        <button class="btn-primary" id="addFirstTask">Add Task</button>
+                    </div>
+                </div>
+
+                <!-- Calendar Page -->
+                <div class="page" id="calendarPage">
+                    <div class="calendar-header">
+                        <div class="calendar-controls">
+                            <button class="icon-btn" id="prevMonth">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h2 id="currentMonth">January 2024</h2>
+                            <button class="icon-btn" id="nextMonth">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <button class="btn-primary" id="addCalendarEvent">
+                            <i class="fas fa-plus"></i>
+                            Add Event
+                        </button>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                    
+                    <div class="calendar-events">
+                        <h3>Today's Events</h3>
+                        <div class="events-list" id="todayEvents">
+                            <!-- Today's events will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Page -->
+                <div class="page" id="resourcesPage">
+                    <div class="resources-header">
+                        <h2>Academic Resources</h2>
+                        <div class="resource-search">
+                            <input type="text" placeholder="Search resources..." id="resourceSearch">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-categories">
+                        <button class="category-btn active" data-category="all">All</button>
+                        <button class="category-btn" data-category="study">Study Materials</button>
+                        <button class="category-btn" data-category="library">Library</button>
+                        <button class="category-btn" data-category="tools">Tools</button>
+                        <button class="category-btn" data-category="links">Quick Links</button>
+                    </div>
+                    
+                    <div class="resources-container" id="resourcesContainer">
+                        <!-- Resources will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Notifications Page -->
+                <div class="page" id="notificationsPage">
+                    <div class="notifications-header">
+                        <h2>Notifications</h2>
+                        <button class="btn-secondary" id="markAllRead">Mark All as Read</button>
+                    </div>
+                    
+                    <div class="notifications-container" id="notificationsContainer">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                    
+                    <div class="empty-state" id="emptyNotificationsState">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No notifications</h3>
+                        <p>You're all caught up!</p>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div class="page" id="settingsPage">
+                    <div class="settings-header">
+                        <h2>Settings</h2>
+                    </div>
+                    
+                    <div class="settings-grid">
+                        <!-- Profile Settings -->
+                        <div class="settings-section">
+                            <h3>Profile</h3>
+                            <div class="settings-item">
+                                <label>Full Name</label>
+                                <input type="text" id="profileName" value="John Smith">
+                            </div>
+                            <div class="settings-item">
+                                <label>Email</label>
+                                <input type="email" id="profileEmail" value="john.smith@university.edu" disabled>
+                            </div>
+                            <div class="settings-item">
+                                <label>Student ID</label>
+                                <input type="text" id="profileStudentId" value="STU123456" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div class="settings-section">
+                            <h3>Notifications</h3>
+                            <div class="settings-item toggle">
+                                <div>
+                                    <label>Task Reminders</label>
+                                    <p>Get notified about upcoming deadlines</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="taskReminders" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-item toggle">
+                                <div>
+                                    <label>Resource Updates</label>
+                                    <p>New study materials and resources</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="resourceUpdates" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-item toggle">
+                                <div>
+                                    <label>Daily Digest</label>
+                                    <p>Daily summary of tasks and events</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="dailyDigest">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Appearance -->
+                        <div class="settings-section">
+                            <h3>Appearance</h3>
+                            <div class="theme-options">
+                                <button class="theme-option active" data-theme="light">
+                                    <i class="fas fa-sun"></i>
+                                    <span>Light</span>
+                                </button>
+                                <button class="theme-option" data-theme="dark">
+                                    <i class="fas fa-moon"></i>
+                                    <span>Dark</span>
+                                </button>
+                                <button class="theme-option" data-theme="auto">
+                                    <i class="fas fa-adjust"></i>
+                                    <span>Auto</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Data Management -->
+                        <div class="settings-section">
+                            <h3>Data</h3>
+                            <button class="settings-action-btn" id="exportData">
+                                <i class="fas fa-download"></i>
+                                <span>Export Data</span>
+                            </button>
+                            <button class="settings-action-btn" id="importData">
+                                <i class="fas fa-upload"></i>
+                                <span>Import Data</span>
+                            </button>
+                            <button class="settings-action-btn danger" id="clearData">
+                                <i class="fas fa-trash"></i>
+                                <span>Clear All Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Task Modal -->
+    <div class="modal" id="newTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Task</h2>
+                <button class="close-modal" id="closeTaskModal">&times;</button>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title *</label>
+                    <input type="text" id="taskTitle" placeholder="Enter task title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" placeholder="Add details about the task..." rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date *</label>
+                        <input type="date" id="taskDueDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="taskCategory">Category</label>
+                    <select id="taskCategory">
+                        <option value="assignment">Assignment</option>
+                        <option value="exam">Exam</option>
+                        <option value="project">Project</option>
+                        <option value="study">Study</option>
+                        <option value="personal">Personal</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="taskReminder">
+                        <span class="checkmark"></span>
+                        Set reminder 1 day before due date
+                    </label>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelTask">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Center -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="close-notifications" id="closeNotifications">&times;</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Registration Failed:', err));
+        }
+    </script>
+
+    <script src="script.js"></script>
+      <script src="sw.js"></script>
+</body>
+</html>
